@@ -150,28 +150,25 @@ update the relevant file directly.
 
 ## Execution
 
-### Using compiled binary (preferred, no Dart SDK needed)
+The compiled binary lives at `skill/bin/generate_invoice`. It runs standalone —
+no Dart SDK needed on the target machine.
+
+### Manual output path
 
 ```bash
-./skill/bin/generate_invoice --data='{...}' --output=invoices/invoice-1001-2026-07-10.pdf
-```
-
-### Using Dart directly
-
-```bash
-cd generator && dart run bin/generate_invoice.dart \
+./skill/bin/generate_invoice \
   --data='{...}' \
-  --output=../invoices/invoice-1001-2026-07-10.pdf
+  --output=invoices/invoice-1001-2026-07-10.pdf
 ```
 
-### Auto-naming (CLI generates filename)
+### Auto-naming
 
 ```bash
-dart run bin/generate_invoice.dart \
+./skill/bin/generate_invoice \
   --data='{...}' \
   --auto-name \
-  --output-dir=../invoices
-# Generates: ../invoices/invoice-1001-2026-07-10.pdf
+  --output-dir=invoices
+# Generates: invoices/invoice-1001-2026-07-10.pdf
 ```
 
 ## Output
