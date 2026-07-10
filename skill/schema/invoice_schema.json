@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Invoice",
+  "description": "Schema for invoice PDF generation",
+  "type": "object",
+  "required": [
+    "id", "issueDate", "dueDate",
+    "service", "companyInfo", "clientInfo", "bankInfo"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Invoice number"
+    },
+    "issueDate": {
+      "type": "integer",
+      "description": "Issue date in milliseconds since epoch"
+    },
+    "dueDate": {
+      "type": "integer",
+      "description": "Due date in milliseconds since epoch"
+    },
+    "service": {
+      "type": "object",
+      "required": ["description", "quantity", "price"],
+      "properties": {
+        "description": { "type": "string" },
+        "quantity": { "type": "number" },
+        "price": { "type": "number" },
+        "currency": {
+          "type": "object",
+          "required": ["name", "cc", "symbol"],
+          "properties": {
+            "name": { "type": "string" },
+            "cc": { "type": "string" },
+            "symbol": { "type": "string" }
+          },
+          "default": {"name": "US Dollar", "cc": "USD", "symbol": "$"}
+        }
+      }
+    },
+    "companyInfo": {
+      "type": "object",
+      "required": ["name", "email", "ownerName"],
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "ownerName": { "type": "string" },
+        "cnpj": { "type": "string" },
+        "address": { "$ref": "#/definitions/Address" }
+      }
+    },
+    "clientInfo": {
+      "type": "object",
+      "required": ["name", "address"],
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" }
+      }
+    },
+    "bankInfo": {
+      "type": "object",
+      "required": ["beneficiaryName", "main"],
+      "properties": {
+        "beneficiaryName": { "type": "string" },
+        "main": { "$ref": "#/definitions/Bank" },
+        "intermediary": { "$ref": "#/definitions/Bank" }
+      }
+    }
+  },
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string" },
+        "extraInfo": { "type": "string" },
+        "neighbourhood": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "country": { "type": "string" },
+        "zipCode": { "type": "string" }
+      }
+    },
+    "Bank": {
+      "type": "object",
+      "required": ["iban", "swift", "bankName", "bankAddress"],
+      "properties": {
+        "iban": { "type": "string" },
+        "swift": { "type": "string" },
+        "bankName": { "type": "string" },
+        "bankAddress": { "type": "string" }
+      }
+    }
+  }
+}

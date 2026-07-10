@@ -1,0 +1,17 @@
+# Dart
+.dart_tool/
+.packages
+
+# Compiled binary
+generator/bin/generate_invoice
+
+# Persisted state (contains personal/financial data)
+.invoice-skill/
+
+# Generated invoices
+invoices/*.pdf
+!invoices/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
