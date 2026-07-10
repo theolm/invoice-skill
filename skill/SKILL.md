@@ -112,11 +112,13 @@ offer: "Use last service (Software development, 1 x $1000) — or change?"
 2. Collect company info from user (CompanyInfo + BankInfo) and write `.invoice-skill/company.json`
 3. Collect initial invoice ID for `.invoice-skill/counter.json`
 4. Collect default currency for `.invoice-skill/preferences.json`
-5. Collect service details + client for the current invoice
-6. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
-7. Save service to `.invoice-skill/last_service.json`
-8. Offer to save client to `.invoice-skill/clients.json`
-9. Increment `.invoice-skill/counter.json`
+5. Collect issue date: ask user to inform a date or use today
+6. Collect due date: ask user to inform a date or use **15 business days** from issue date (default)
+7. Collect service details + client for the current invoice
+8. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
+9. Save service to `.invoice-skill/last_service.json`
+10. Offer to save client to `.invoice-skill/clients.json`
+11. Increment `.invoice-skill/counter.json`
 
 ### Subsequent Runs
 
@@ -125,10 +127,21 @@ offer: "Use last service (Software development, 1 x $1000) — or change?"
 3. Read `.invoice-skill/preferences.json` — use default currency
 4. Read `.invoice-skill/clients.json` — if clients exist, offer: "Use existing client or new one?"
 5. Read `.invoice-skill/last_service.json` — if it exists, offer: "Use last service (description, qty x price) or provide new details?"
-6. Collect service details (or reuse last service) and client
-7. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
-8. Save service to `.invoice-skill/last_service.json`
-9. Offer to save client, increment counter
+6. Collect issue date: ask user to inform a date or use today
+7. Collect due date: ask user to inform a date or use **15 business days** from issue date (default)
+8. Collect service details (or reuse last service) and client
+9. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
+10. Save service to `.invoice-skill/last_service.json`
+11. Offer to save client, increment counter
+
+### Business Days Calculation
+
+When using 15 business days (dias úteis) for due date:
+- Count 15 calendar days skipping Saturdays and Sundays
+- Use a weekday (Mon-Fri) as the start date
+- If the result falls on a weekend, advance to the next Monday
+
+Example: issue date 2026-07-10 (Fri) + 15 business days = 2026-07-31 (Fri)
 
 ### Updating Persisted Data
 
