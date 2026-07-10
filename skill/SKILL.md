@@ -34,6 +34,7 @@ files directly using `read`, `write`, and `bash` tools.
 | `.invoice-skill/clients.json` | List of past clients | Optional, grows over time |
 | `.invoice-skill/counter.json` | `{ "last_id": 1001 }` | Every invoice (auto-increment) |
 | `.invoice-skill/preferences.json` | Default currency, etc. | Rarely |
+| `.invoice-skill/last_service.json` | Last service used (description, quantity, price, currency) | Every invoice |
 
 ### Company Info
 
@@ -87,6 +88,22 @@ File: `.invoice-skill/preferences.json`
 
 Default currency for new invoices. User can change later.
 
+### Last Service
+
+File: `.invoice-skill/last_service.json`
+
+```json
+{
+  "description": "Software development",
+  "quantity": 1,
+  "price": 1000,
+  "currency": { "name": "US Dollar", "cc": "USD", "symbol": "$" }
+}
+```
+
+Saved after every invoice. Before creating a new invoice, check this file and
+offer: "Use last service (Software development, 1 x $1000) — or change?"
+
 ## Workflow
 
 ### First Run (no state files exist)
@@ -97,8 +114,9 @@ Default currency for new invoices. User can change later.
 4. Collect default currency for `.invoice-skill/preferences.json`
 5. Collect service details + client for the current invoice
 6. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
-7. Offer to save client to `.invoice-skill/clients.json`
-8. Increment `.invoice-skill/counter.json`
+7. Save service to `.invoice-skill/last_service.json`
+8. Offer to save client to `.invoice-skill/clients.json`
+9. Increment `.invoice-skill/counter.json`
 
 ### Subsequent Runs
 
@@ -106,9 +124,11 @@ Default currency for new invoices. User can change later.
 2. Read `.invoice-skill/counter.json` — auto-increment, propose: "Invoice #1002 — confirm or change?"
 3. Read `.invoice-skill/preferences.json` — use default currency
 4. Read `.invoice-skill/clients.json` — if clients exist, offer: "Use existing client or new one?"
-5. Collect only what's specific to this invoice (service description, quantity, price)
-6. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
-7. Offer to save client, increment counter
+5. Read `.invoice-skill/last_service.json` — if it exists, offer: "Use last service (description, qty x price) or provide new details?"
+6. Collect service details (or reuse last service) and client
+7. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
+8. Save service to `.invoice-skill/last_service.json`
+9. Offer to save client, increment counter
 
 ### Updating Persisted Data
 
