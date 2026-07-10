@@ -108,31 +108,33 @@ offer: "Use last service (Software development, 1 x $1000) — or change?"
 
 ### First Run (no state files exist)
 
+1. Ensure `skill/bin/generate_invoice` has execute permission: `chmod +x skill/bin/generate_invoice`
 1. Check `.invoice-skill/` — create if missing: `mkdir -p .invoice-skill`
-2. Collect company info from user (CompanyInfo + BankInfo) and write `.invoice-skill/company.json`
-3. Collect initial invoice ID for `.invoice-skill/counter.json`
-4. Collect default currency for `.invoice-skill/preferences.json`
-5. Collect issue date: ask user to inform a date or use today
-6. Collect due date: ask user to inform a date or use **15 business days** from issue date (default)
-7. Collect service details + client for the current invoice
-8. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
-9. Save service to `.invoice-skill/last_service.json`
-10. Offer to save client to `.invoice-skill/clients.json`
-11. Increment `.invoice-skill/counter.json`
+1. Collect company info from user (CompanyInfo + BankInfo) and write `.invoice-skill/company.json`
+1. Collect initial invoice ID for `.invoice-skill/counter.json`
+1. Collect default currency for `.invoice-skill/preferences.json`
+1. Collect issue date: ask user to inform a date or use today
+1. Collect due date: ask user to inform a date or use **15 business days** from issue date (default)
+1. Collect service details + client for the current invoice
+1. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
+1. Save service to `.invoice-skill/last_service.json`
+1. Offer to save client to `.invoice-skill/clients.json`
+1. Increment `.invoice-skill/counter.json`
 
 ### Subsequent Runs
 
+1. Ensure `skill/bin/generate_invoice` has execute permission: `chmod +x skill/bin/generate_invoice`
 1. Read `.invoice-skill/company.json` — skip company questions
-2. Read `.invoice-skill/counter.json` — auto-increment, propose: "Invoice #1002 — confirm or change?"
-3. Read `.invoice-skill/preferences.json` — use default currency
-4. Read `.invoice-skill/clients.json` — if clients exist, offer: "Use existing client or new one?"
-5. Read `.invoice-skill/last_service.json` — if it exists, offer: "Use last service (description, qty x price) or provide new details?"
-6. Collect issue date: ask user to inform a date or use today
-7. Collect due date: ask user to inform a date or use **15 business days** from issue date (default)
-8. Collect service details (or reuse last service) and client
-9. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
-10. Save service to `.invoice-skill/last_service.json`
-11. Offer to save client, increment counter
+1. Read `.invoice-skill/counter.json` — auto-increment, propose: "Invoice #1002 — confirm or change?"
+1. Read `.invoice-skill/preferences.json` — use default currency
+1. Read `.invoice-skill/clients.json` — if clients exist, offer: "Use existing client or new one?"
+1. Read `.invoice-skill/last_service.json` — if it exists, offer: "Use last service (description, qty x price) or provide new details?"
+1. Collect issue date: ask user to inform a date or use today
+1. Collect due date: ask user to inform a date or use **15 business days** from issue date (default)
+1. Collect service details (or reuse last service) and client
+1. Generate PDF to `invoices/invoice-{id}-{YYYY-MM-DD}.pdf`
+1. Save service to `.invoice-skill/last_service.json`
+1. Offer to save client, increment counter
 
 ### Business Days Calculation
 
@@ -152,6 +154,9 @@ update the relevant file directly.
 
 The compiled binary lives at `skill/bin/generate_invoice`. It runs standalone —
 no Dart SDK needed on the target machine.
+
+**Note:** The agent automatically ensures execute permission before each use
+via `chmod +x skill/bin/generate_invoice` (safe on all OSes — Windows ignores it).
 
 ### Manual output path
 
