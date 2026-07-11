@@ -5,6 +5,8 @@ description: >
   Manages persistent user data (company info, client list, invoice counter,
   preferences) across sessions via JSON files in .invoice-skill/ at the
   project root.
+metadata:
+  version: "0.1.0"
 ---
 
 # Invoice PDF Generator
