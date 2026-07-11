@@ -164,6 +164,11 @@ in a single response. When a default exists, include it in the question.**
    - "SWIFT/BIC?"
    - "Bank name?"
    - "Bank address?"
+1. **Intermediary bank?** — "Need to add an intermediary bank?" If yes, one at a time:
+   - "Intermediary IBAN?"
+   - "Intermediary SWIFT/BIC?"
+   - "Intermediary bank name?"
+   - "Intermediary bank address?"
 1. Write `.invoice-skill/company.json` with CompanyInfo + BankInfo
 1. "Starting invoice ID?" — ask once, write to `counter.json`
 1. "Default currency?" — if not provided, default: **USD ($)**
