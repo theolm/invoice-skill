@@ -7,9 +7,6 @@ Detailed descriptions of each invoice field for the AI model.
 - `id` (int): Unique invoice number. Auto-incremented in `.invoice-skill/counter.json`.
 - `issueDate` (int): Date the invoice was issued, as milliseconds since Unix epoch.
 - `dueDate` (int): Date payment is due, as milliseconds since Unix epoch.
-- `createdAt` (int, optional): Record creation timestamp.
-- `updatedAt` (int, optional): Record last update timestamp.
-
 ## ServiceInfo
 
 - `description` (string): What was provided/sold.

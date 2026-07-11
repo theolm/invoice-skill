@@ -13,8 +13,6 @@ class Invoice {
   final CompanyInfo companyInfo;
   final ClientInfo clientInfo;
   final BankInfo bankInfo;
-  final int createdAt;
-  final int updatedAt;
 
   Invoice(
     this.id,
@@ -24,8 +22,6 @@ class Invoice {
     this.companyInfo,
     this.clientInfo,
     this.bankInfo,
-    this.createdAt,
-    this.updatedAt,
   );
 
   factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
@@ -36,8 +32,6 @@ class Invoice {
         CompanyInfo.fromJson(json['companyInfo'] as Map<String, dynamic>),
         ClientInfo.fromJson(json['clientInfo'] as Map<String, dynamic>),
         BankInfo.fromJson(json['bankInfo'] as Map<String, dynamic>),
-        json['createdAt'] as int? ?? 0,
-        json['updatedAt'] as int? ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -48,8 +42,6 @@ class Invoice {
         'companyInfo': companyInfo.toJson(),
         'clientInfo': clientInfo.toJson(),
         'bankInfo': bankInfo.toJson(),
-        'createdAt': createdAt,
-        'updatedAt': updatedAt,
       };
 
   String formattedQuantity() => service.formattedQuantity();

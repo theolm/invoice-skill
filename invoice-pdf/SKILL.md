@@ -104,6 +104,36 @@ File: `.invoice-skill/last_service.json`
 Saved after every invoice. Before creating a new invoice, check this file and
 offer: "Use last service (Software development, 1 x $1000) — or change?"
 
+## Skill Directory Resolution
+
+The binary is at `<skill_dir>/bin/generate_invoice`. Resolve `<skill_dir>` by
+trying in order:
+
+1. If the agent knows its skill directory: use that path directly.
+2. **Fallback — search via shell**:
+   ```bash
+   find . -path "*/bin/generate_invoice" -type f 2>/dev/null | head -1
+   ```
+3. **Last resort**: ask the user to provide the absolute path to
+   `generate_invoice`.
+
+## First-Time Setup
+
+Run once per installation:
+
+```bash
+chmod +x <path_to>/bin/generate_invoice
+```
+
+If this fails (e.g., read-only filesystem), copy the binary to a writable
+location:
+
+```bash
+mkdir -p ./.invoice-skill/bin
+cp <path_to>/bin/generate_invoice ./.invoice-skill/bin/generate_invoice
+chmod +x ./.invoice-skill/bin/generate_invoice
+```
+
 ## Workflow
 
 **Important: always ask one question at a time. Never ask multiple questions
@@ -111,8 +141,8 @@ in a single response. When a default exists, include it in the question.**
 
 ### First Run (no state files exist)
 
-1. Determine `<skill_dir>` (absolute path where this `SKILL.md` is located)
-1. `chmod +x <skill_dir>/bin/generate_invoice`
+1. Resolve `<skill_dir>` (see Skill Directory Resolution above)
+1. Run first-time setup (see First-Time Setup above)
 1. `mkdir -p .invoice-skill`
 1. **Collect company info** — one field at a time:
    - "Company name?"
@@ -146,6 +176,9 @@ in a single response. When a default exists, include it in the question.**
    If different, ask for the date.
 1. **Due date:** "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
    If different, ask for the date.
+1. **Convert dates to milliseconds since Unix epoch** before passing to the binary:
+   - macOS: `date -j -f "%Y-%m-%d" "2026-07-10" +%s` → multiply the result by 1000
+   - Linux: `date -d "2026-07-10" +%s%3N`
 1. Generate PDF: `<skill_dir>/bin/generate_invoice --data='{...}' --auto-name --output-dir=invoices`
 1. Save service to `.invoice-skill/last_service.json`
 1. "Save this client for next time?" — if yes, append to `.invoice-skill/clients.json`
@@ -172,7 +205,7 @@ summary, and ask:
 - If **change X** → ask only about that field (one question at a time).
   Keep everything else from saved data.
 
-1. Determine `<skill_dir>`, `chmod +x <skill_dir>/bin/generate_invoice`
+1. Resolve `<skill_dir>` (see Skill Directory Resolution above)
 1. Read all `.invoice-skill/` files
 1. Present summary → user chooses generate or change
 1. If changing client: check `.invoice-skill/clients.json` first —
@@ -181,6 +214,7 @@ summary, and ask:
    "Use last service ({description}, {qty} x {price}) or new?"
 1. If changing issue date: "Issue date: today (YYYY-MM-DD) — OK or different?"
 1. If changing due date: "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
+1. **Convert dates to milliseconds since Unix epoch** (see conversion instructions in First Run above)
 1. Generate PDF using `<skill_dir>/bin/generate_invoice`
 1. Save service to `.invoice-skill/last_service.json`
 1. Update client in `.invoice-skill/clients.json` (increment usedCount)
@@ -202,13 +236,11 @@ update the relevant file directly.
 
 ## Execution
 
-The compiled binary is at `<skill_dir>/bin/generate_invoice` (where `<skill_dir>`
-is the absolute path to this skill's directory — resolved by the agent from
-context). It runs standalone — no Dart SDK needed.
+The compiled binary is at `<skill_dir>/bin/generate_invoice`. See Skill
+Directory Resolution and First-Time Setup above for locating and preparing
+the binary. It runs standalone — no Dart SDK needed.
 
-1. Resolve `<skill_dir>` to this skill's installation directory
-2. Ensure execute permission: `chmod +x <skill_dir>/bin/generate_invoice`
-3. Run the binary with invoice data
+Run the binary with invoice data:
 
 ### Manual output path
 
