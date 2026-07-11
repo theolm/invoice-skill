@@ -19,6 +19,18 @@ npx skills add https://github.com/theolm/invoice-skill -g
 npx skills add https://github.com/theolm/invoice-skill
 ```
 
+## Updating
+
+The skill is distributed via Git. Run one of the commands below to pull the latest version:
+
+```bash
+# Update the global install
+npx skills update invoice-pdf -g
+
+# Update the project install
+npx skills update invoice-pdf
+```
+
 ## Usage
 
 After installing the skill, just ask your AI agent in natural language.
