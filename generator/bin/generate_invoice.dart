@@ -42,7 +42,7 @@ Future<void> main(List<String> args) async {
   if (parsed['auto-name'] as bool) {
     final id = invoiceData['id'] ?? 0;
     final issueDate = invoiceData['issueDate'] as int? ?? DateTime.now().millisecondsSinceEpoch;
-    final date = DateTime.fromMillisecondsSinceEpoch(issueDate);
+    final date = DateTime.fromMillisecondsSinceEpoch(issueDate, isUtc: true);
     final dateStr =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     final dir = parsed['output-dir'] as String;

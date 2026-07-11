@@ -176,9 +176,10 @@ in a single response. When a default exists, include it in the question.**
    If different, ask for the date.
 1. **Due date:** "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
    If different, ask for the date.
-1. **Convert dates to milliseconds since Unix epoch** before passing to the binary:
-   - macOS: `date -j -f "%Y-%m-%d" "2026-07-10" +%s` → multiply the result by 1000
-   - Linux: `date -d "2026-07-10" +%s%3N`
+1. **Convert dates to UTC midnight, then to milliseconds since Unix epoch** before passing to the binary:
+   - macOS: `date -u -j -f "%Y-%m-%d" "2026-07-11" +%s` → multiply the result by 1000
+   - Linux: `date -u -d "2026-07-11" +%s%3N`
+   - The `-u` flag forces UTC so the date stays exactly what the user said, regardless of the machine's timezone.
 1. Generate PDF: `<skill_dir>/bin/generate_invoice --data='{...}' --auto-name --output-dir=invoices`
 1. Save service to `.invoice-skill/last_service.json`
 1. "Save this client for next time?" — if yes, append to `.invoice-skill/clients.json`
@@ -214,7 +215,7 @@ summary, and ask:
    "Use last service ({description}, {qty} x {price}) or new?"
 1. If changing issue date: "Issue date: today (YYYY-MM-DD) — OK or different?"
 1. If changing due date: "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
-1. **Convert dates to milliseconds since Unix epoch** (see conversion instructions in First Run above)
+1. **Convert dates to UTC midnight, then to milliseconds since Unix epoch** (see conversion instructions in First Run above)
 1. Generate PDF using `<skill_dir>/bin/generate_invoice`
 1. Save service to `.invoice-skill/last_service.json`
 1. Update client in `.invoice-skill/clients.json` (increment usedCount)

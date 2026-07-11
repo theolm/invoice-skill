@@ -32,7 +32,7 @@ class PdfWidgets {
               getLabel("Issue Date"),
               pw.Text(
                 _formatDate(
-                    DateTime.fromMillisecondsSinceEpoch(invoice.issueDate)),
+                    DateTime.fromMillisecondsSinceEpoch(invoice.issueDate, isUtc: true)),
                 style: pw.TextStyle(
                   fontWeight: pw.FontWeight.normal,
                   fontSize: 10,
@@ -46,7 +46,7 @@ class PdfWidgets {
               getLabel("Due Date"),
               pw.Text(
                 _formatDate(
-                    DateTime.fromMillisecondsSinceEpoch(invoice.dueDate)),
+                    DateTime.fromMillisecondsSinceEpoch(invoice.dueDate, isUtc: true)),
                 style: pw.TextStyle(
                   fontWeight: pw.FontWeight.normal,
                   fontSize: 10,
