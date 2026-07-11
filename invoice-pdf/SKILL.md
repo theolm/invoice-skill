@@ -138,47 +138,55 @@ chmod +x ./.invoice-skill/bin/generate_invoice
 
 ## Workflow
 
-**Important: always ask one question at a time. Never ask multiple questions
-in a single response. When a default exists, include it in the question.**
+Ask the user in blocks. Each block is presented with numbered fields. The user
+can respond in two ways:
+
+- **Numbered:** `1. Acme Corp  2. 123 Main St`
+- **Free-form:** `Acme Corp, 123 Main St`
+
+If a field is unclear or missing, ask only for that field before moving on.
 
 ### First Run (no state files exist)
 
 1. Resolve `<skill_dir>` (see Skill Directory Resolution above)
 1. Run first-time setup (see First-Time Setup above)
 1. `mkdir -p .invoice-skill`
-1. **Collect company info** — one field at a time:
-   - "Company name?"
-   - "Owner name?"
-   - "Email?"
-   - "CNPJ?" (optional — skip if not applicable)
-   - "Street and number?"
-   - "Complement?" (optional)
-   - "Neighbourhood?"
-   - "City?"
-   - "State?"
-   - "Country?"
-   - "Zip code?"
-1. **Collect bank info** — one field at a time:
-   - "Beneficiary name?"
-   - "IBAN?"
-   - "SWIFT/BIC?"
-   - "Bank name?"
-   - "Bank address?"
-1. **Intermediary bank?** — "Need to add an intermediary bank?" If yes, one at a time:
-   - "Intermediary IBAN?"
-   - "Intermediary SWIFT/BIC?"
-   - "Intermediary bank name?"
-   - "Intermediary bank address?"
+1. **Block 1: Company Info** (saved to `.invoice-skill/company.json`):
+   1. Company name
+   2. Owner name
+   3. Email
+   4. CNPJ (optional)
+   5. Street and number
+   6. Complement (optional)
+   7. Neighbourhood
+   8. City
+   9. State
+   10. Country
+   11. Zip code
+1. **Block 2: Main Bank** (saved to `.invoice-skill/company.json`):
+   1. Beneficiary name
+   2. IBAN
+   3. SWIFT/BIC
+   4. Bank name
+   5. Bank address
+1. **Intermediary bank?** — "Need to add an intermediary bank?"
+   - If yes, **Block 2b: Intermediary Bank**:
+     1. Intermediary IBAN
+     2. Intermediary SWIFT/BIC
+     3. Intermediary bank name
+     4. Intermediary bank address
 1. Write `.invoice-skill/company.json` with CompanyInfo + BankInfo
-1. "Starting invoice ID?" — ask once, write to `counter.json`
-1. "Default currency?" — if not provided, default: **USD ($)**
-1. **Collect client** — one field at a time:
-   - "Client name?"
-   - "Client address?"
-1. **Collect service** — one field at a time:
-   - "Service description?"
-   - "Quantity?"
-   - "Unit price?"
+1. **Block 3: Client**:
+   1. Client name
+   2. Client address
+1. **Block 4: Service + Config**:
+   1. Starting invoice ID (first run only)
+   2. Default currency (first run only)
+   3. Service description
+   4. Quantity
+   5. Unit price
+1. Write `counter.json` (starting ID) and `preferences.json` (default currency)
+1. Save service to `.invoice-skill/last_service.json`
 1. **Issue date:** "Issue date: today (YYYY-MM-DD) — OK or different?"
    If different, ask for the date.
 1. **Due date:** "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
@@ -188,7 +196,6 @@ in a single response. When a default exists, include it in the question.**
    - Linux: `date -u -d "2026-07-11" +%s%3N`
    - The `-u` flag forces UTC so the date stays exactly what the user said, regardless of the machine's timezone.
 1. Generate PDF: `<skill_dir>/bin/generate_invoice --data='{...}' --auto-name --output-dir=invoices`
-1. Save service to `.invoice-skill/last_service.json`
 1. "Save this client for next time?" — if yes, append to `.invoice-skill/clients.json`
 1. Increment `.invoice-skill/counter.json`
 
@@ -209,17 +216,18 @@ summary, and ask:
  Generate or change something?"
 ```
 
-- If **generate** → skip all questions, proceed to step 5.
-- If **change X** → ask only about that field (one question at a time).
-  Keep everything else from saved data.
+- If **generate** → skip all change questions, proceed to dates.
+- If **change X** → ask only that block, keeping everything else from saved data.
 
 1. Resolve `<skill_dir>` (see Skill Directory Resolution above)
 1. Read all `.invoice-skill/` files
 1. Present summary → user chooses generate or change
+1. If changing company: ask **Block 1**
+1. If changing bank: ask **Block 2** (+ optional intermediary)
 1. If changing client: check `.invoice-skill/clients.json` first —
-   "Use Ambush (used 3x) or new client?"
+   "Use Ambush (used 3x) or new client?" If new, ask **Block 3**
 1. If changing service: check `.invoice-skill/last_service.json` —
-   "Use last service ({description}, {qty} x {price}) or new?"
+   "Use last service ({description}, {qty} x {price}) or new?" If new, ask **Block 4**
 1. If changing issue date: "Issue date: today (YYYY-MM-DD) — OK or different?"
 1. If changing due date: "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
 1. **Convert dates to UTC midnight, then to milliseconds since Unix epoch** (see conversion instructions in First Run above)
