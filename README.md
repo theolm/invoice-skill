@@ -5,20 +5,6 @@ supporting the Agent Skills standard (OpenCode, Claude Code, Codex, Cursor,
 and 70+ more).
 
 
-## Persistence
-
-The AI agent manages state across sessions via JSON files in `.invoice-skill/`:
-
-| File | Content |
-|------|---------|
-| `company.json` | Company info + bank details (asked once) |
-| `clients.json` | List of past clients (optional, grows over time) |
-| `counter.json` | Auto-incrementing invoice ID |
-| `preferences.json` | Default currency, etc. |
-| `last_service.json` | Last service used (reused on next invoice if desired) |
-
-Generated PDFs go to `invoices/` with unique names: `invoice-{id}-{YYYY-MM-DD}.pdf`.
-
 ## Installing
 
 ### Using npx skills (recommended)
@@ -79,3 +65,17 @@ project root.
 
 See the [invoice schema](invoice-pdf/schema/invoice_schema.json) for all
 available fields.
+
+## Persistence
+
+The AI agent manages state across sessions via JSON files in `.invoice-skill/`:
+
+| File | Content |
+|------|---------|
+| `company.json` | Company info + bank details (asked once) |
+| `clients.json` | List of past clients (optional, grows over time) |
+| `counter.json` | Auto-incrementing invoice ID |
+| `preferences.json` | Default currency, etc. |
+| `last_service.json` | Last service used (reused on next invoice if desired) |
+
+Generated PDFs go to `invoices/` with unique names: `invoice-{id}-{YYYY-MM-DD}.pdf`.
