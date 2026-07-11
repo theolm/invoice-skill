@@ -106,37 +106,85 @@ offer: "Use last service (Software development, 1 x $1000) — or change?"
 
 ## Workflow
 
+**Important: always ask one question at a time. Never ask multiple questions
+in a single response. When a default exists, include it in the question.**
+
 ### First Run (no state files exist)
 
-1. Determine this skill's directory (`<skill_dir>`) — the absolute path where this `SKILL.md` is located
-1. Ensure execute permission: `chmod +x <skill_dir>/bin/generate_invoice`
-1. Create `.invoice-skill/` if missing: `mkdir -p .invoice-skill`
-1. Collect company info from user (CompanyInfo + BankInfo) and write `.invoice-skill/company.json`
-1. Collect initial invoice ID for `.invoice-skill/counter.json`
-1. Collect default currency for `.invoice-skill/preferences.json`
-1. Collect issue date: ask user to provide a date or use today
-1. Collect due date: ask user to provide a date or use **15 business days** from issue date (default)
-1. Collect service details + client for the current invoice
-1. Generate PDF using `<skill_dir>/bin/generate_invoice`
+1. Determine `<skill_dir>` (absolute path where this `SKILL.md` is located)
+1. `chmod +x <skill_dir>/bin/generate_invoice`
+1. `mkdir -p .invoice-skill`
+1. **Collect company info** — one field at a time:
+   - "Company name?"
+   - "Owner name?"
+   - "Email?"
+   - "CNPJ?" (optional — skip if not applicable)
+   - "Street and number?"
+   - "Complement?" (optional)
+   - "Neighbourhood?"
+   - "City?"
+   - "State?"
+   - "Country?"
+   - "Zip code?"
+1. **Collect bank info** — one field at a time:
+   - "Beneficiary name?"
+   - "IBAN?"
+   - "SWIFT/BIC?"
+   - "Bank name?"
+   - "Bank address?"
+1. Write `.invoice-skill/company.json` with CompanyInfo + BankInfo
+1. "Starting invoice ID?" — ask once, write to `counter.json`
+1. "Default currency?" — if not provided, default: **USD ($)**
+1. **Collect client** — one field at a time:
+   - "Client name?"
+   - "Client address?"
+1. **Collect service** — one field at a time:
+   - "Service description?"
+   - "Quantity?"
+   - "Unit price?"
+1. **Issue date:** "Issue date: today (YYYY-MM-DD) — OK or different?"
+   If different, ask for the date.
+1. **Due date:** "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
+   If different, ask for the date.
+1. Generate PDF: `<skill_dir>/bin/generate_invoice --data='{...}' --auto-name --output-dir=invoices`
 1. Save service to `.invoice-skill/last_service.json`
-1. Offer to save client to `.invoice-skill/clients.json`
+1. "Save this client for next time?" — if yes, append to `.invoice-skill/clients.json`
 1. Increment `.invoice-skill/counter.json`
 
 ### Subsequent Runs
 
-1. Determine this skill's directory (`<skill_dir>`) — the absolute path where this `SKILL.md` is located
-1. Ensure execute permission: `chmod +x <skill_dir>/bin/generate_invoice`
-1. Read `.invoice-skill/company.json` — skip company questions
-1. Read `.invoice-skill/counter.json` — auto-increment, propose: "Invoice #1002 — confirm or change?"
-1. Read `.invoice-skill/preferences.json` — use default currency
-1. Read `.invoice-skill/clients.json` — if clients exist, offer: "Use existing client or new one?"
-1. Read `.invoice-skill/last_service.json` — if it exists, offer: "Use last service (description, qty x price) or provide new details?"
-1. Collect issue date: ask user to provide a date or use today
-1. Collect due date: ask user to provide a date or use **15 business days** from issue date (default)
-1. Collect service details (or reuse last service) and client
+Saved data found in `.invoice-skill/`. Load everything, present a single
+summary, and ask:
+
+```
+"I have:
+ Company: {company.name}
+ Client: {client.name} ({client.address})
+ Service: {service.description} ({service.quantity} x {service.currency.symbol}{service.price})
+ Invoice #{next_id}
+ Issue date: today (YYYY-MM-DD)
+ Due date: 15 business days from issue date (YYYY-MM-DD)
+
+ Generate or change something?"
+```
+
+- If **generate** → skip all questions, proceed to step 5.
+- If **change X** → ask only about that field (one question at a time).
+  Keep everything else from saved data.
+
+1. Determine `<skill_dir>`, `chmod +x <skill_dir>/bin/generate_invoice`
+1. Read all `.invoice-skill/` files
+1. Present summary → user chooses generate or change
+1. If changing client: check `.invoice-skill/clients.json` first —
+   "Use Ambush (used 3x) or new client?"
+1. If changing service: check `.invoice-skill/last_service.json` —
+   "Use last service ({description}, {qty} x {price}) or new?"
+1. If changing issue date: "Issue date: today (YYYY-MM-DD) — OK or different?"
+1. If changing due date: "Due date: 15 business days from issue date (YYYY-MM-DD) — OK or different?"
 1. Generate PDF using `<skill_dir>/bin/generate_invoice`
 1. Save service to `.invoice-skill/last_service.json`
-1. Offer to save client, increment counter
+1. Update client in `.invoice-skill/clients.json` (increment usedCount)
+1. Increment `.invoice-skill/counter.json`
 
 ### Business Days Calculation
 
